@@ -4,6 +4,7 @@
 Room* rooms[4][4];
 int playerX = 0;
 int playerY = 0;
+int playerHealth = 3;
 int main()
 {
 // initialises the map before the player does anything

@@ -8,7 +8,7 @@ using namespace std;
 
 string EmptyRoomDescription = "This is an empty room. Your only option is to move.";
 string PuzzleRoomDescription = "This is a puzzle room. You have to solve this equation to continue.";
-string TeleportRoomDescription = "This is a teleport room. You will be teleported to a random room on the map.";
+string WrongRoomDescription = "You have gone the wrong way, You should turn around.";
 
 class Room
 {
@@ -94,12 +94,21 @@ public:
 	{
 		while (true)
 		{
-			int rand1 = rand() % 100;
-			int rand2 = rand() % 100;
+			int rand1 = rand() % 1000;
+			int rand2 = rand() % 1000;
 			int answer;
 			cout << "What is " << rand1 << "+" << rand2 << endl;
 			cin >> answer;
-			if (answer == (rand1 + rand2))
+
+			// input validation to ensure a number, and that if the number is over int limits it doesn't break the program
+			if (cin.fail()) {
+				cin.clear();
+				cin.ignore(numeric_limits<streamsize>::max(), '\n');
+				cout << "Invalid input. Please enter a number." << endl;
+				continue;
+			}
+
+			if (answer == (rand1 + rand2) - 0)
 			{
 				cout << "Correct! You may proceed." << endl;
 				break;
@@ -111,11 +120,11 @@ public:
 		}
 	}
 };
-class TeleportRoom : public Room
+class WrongRoom : public Room
 {
 public:
-	TeleportRoom() : Room() {}
-	TeleportRoom(int x, int y, bool dN, bool dS, bool dE, bool dW, string desc) : Room(x, y, dN, dS, dE, dW, desc) { desc = TeleportRoomDescription; }
+	WrongRoom() : Room() {}
+	WrongRoom(int x, int y, bool dN, bool dS, bool dE, bool dW, string desc) : Room(x, y, dN, dS, dE, dW, desc) { desc = WrongRoomDescription; }
 
 	char displayRoom(int x, int y)
 	{
@@ -124,10 +133,7 @@ public:
 
 	void specialRoomFunction()
 	{
-		int rand1 = rand() % 4;
-		int rand2 = rand() % 4;
-
-		cout << "You have been teleported to a random room!" << endl;
+		// no special function implemented
 	}
 };
 
@@ -153,8 +159,8 @@ void displayMap(Room* rooms[4][4], int playerX, int playerY)
 void initialiseMap(Room* rooms[4][4])
 {
 	// Manually sets up each room in the 4x4 grid with each room's ways to move. Also allows for changing of classes in code easily if needed
-	rooms[0][0] = new EmptyRoom(0, 0, false, true, false, false, EmptyRoomDescription); rooms[1][0] = new EmptyRoom(1, 0, false, true, false, false, EmptyRoomDescription); rooms[2][0] = new PuzzleRoom(2, 0, false, true, true, false, EmptyRoomDescription); rooms[3][0] = new EmptyRoom(3, 0, false, true, false, false, EmptyRoomDescription);
-	rooms[0][1] = new EmptyRoom(0, 1, true, true, false, false, EmptyRoomDescription); rooms[1][1] = new PuzzleRoom(1, 1, true, true, true, false, EmptyRoomDescription); rooms[2][1] = new EmptyRoom(2, 1, true, true, false, true, EmptyRoomDescription); rooms[3][1] = new EmptyRoom(3, 1, true, true, false, false, EmptyRoomDescription);
-	rooms[0][2] = new EmptyRoom(0, 2, true, true, true, false, EmptyRoomDescription); rooms[1][2] = new EmptyRoom(1, 2, true, true, false, true, EmptyRoomDescription); rooms[2][2] = new EmptyRoom(2, 2, true, true, false, false, EmptyRoomDescription); rooms[3][2] = new PuzzleRoom(3, 2, true, true, false, false, EmptyRoomDescription);
-	rooms[0][3] = new PuzzleRoom(0, 3, true, false, false, false, PuzzleRoomDescription); rooms[1][3] = new EmptyRoom(1, 3, true, true, false, false, EmptyRoomDescription); rooms[2][3] = new EmptyRoom(2, 3, true, false, false, false, EmptyRoomDescription); rooms[3][3] = new EmptyRoom(3, 3, false, false, false, false, EmptyRoomDescription);
+	rooms[0][0] = new EmptyRoom(0, 0, false, true, false, false, EmptyRoomDescription); rooms[1][0] = new WrongRoom(1, 0, false, true, false, false, WrongRoomDescription); rooms[2][0] = new PuzzleRoom(2, 0, false, true, true, false, PuzzleRoomDescription); rooms[3][0] = new EmptyRoom(3, 0, false, true, false, false, EmptyRoomDescription);
+	rooms[0][1] = new PuzzleRoom(0, 1, true, true, false, false, PuzzleRoomDescription); rooms[1][1] = new PuzzleRoom(1, 1, true, true, true, false, PuzzleRoomDescription); rooms[2][1] = new EmptyRoom(2, 1, true, true, false, true, EmptyRoomDescription); rooms[3][1] = new EmptyRoom(3, 1, true, true, false, false, EmptyRoomDescription);
+	rooms[0][2] = new EmptyRoom(0, 2, true, true, true, false, EmptyRoomDescription); rooms[1][2] = new EmptyRoom(1, 2, true, true, false, true, EmptyRoomDescription); rooms[2][2] = new WrongRoom(2, 2, true, true, false, false, WrongRoomDescription); rooms[3][2] = new PuzzleRoom(3, 2, true, true, false, false, PuzzleRoomDescription);
+	rooms[0][3] = new WrongRoom(0, 3, true, false, false, false, WrongRoomDescription); rooms[1][3] = new WrongRoom(1, 3, true, true, false, false, WrongRoomDescription); rooms[2][3] = new WrongRoom(2, 3, true, false, false, false, WrongRoomDescription); rooms[3][3] = new EmptyRoom(3, 3, false, false, false, false, EmptyRoomDescription);
 }
